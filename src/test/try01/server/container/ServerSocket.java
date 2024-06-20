@@ -1,27 +1,29 @@
 package server.container;
 
-import static common.Constant.*;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 import protocol.ProxyMsgDecoder;
 import protocol.ProxyMsgEncoder;
-import server.handler.ServerSocketHandler;
+import server.common.Constant;
+import server.handler.ClientHandler;
 
 import java.net.InetSocketAddress;
 
 @Slf4j
 public class ServerSocket {
-    private static final NioEventLoopGroup workerGroup = new NioEventLoopGroup();
-    private static final NioEventLoopGroup bossGroup = new NioEventLoopGroup();
+    private static final EventLoopGroup bossGroup = new NioEventLoopGroup();
+    private static final EventLoopGroup workerGroup = new NioEventLoopGroup();
 
     public static void start(){
-        ServerBootstrap serverBootstrap = new ServerBootstrap();
+        ServerBootstrap serverBootstrap = new ServerBootstrap
         ChannelFuture channelFuture = serverBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
@@ -32,9 +34,9 @@ public class ServerSocket {
                                 //连接保活机制
                                 //.addLast(new IdleStateHandler(40, 10, 0))
                                 //处理连接它的客户端
-                                .addLast(new ServerSocketHandler());
+                                .addLast(new ClientHandler(
                     }
-                }).bind(serverPort);
+                }).bind(Constant.serverPort);
 
         channelFuture.addListener((ChannelFutureListener) future -> {
             if(future.isSuccess()) {

@@ -28,22 +28,8 @@ public class ClientHandler extends SimpleChannelInboundHandler<ProxyMsg> {
                 break;
             case ProxyMsg.TYPE_CONNECT:
                 String vid = new String(msg.getData());
-                // 绑定访客和客户端的连接
-             /*   Channel visitorChannel = Constant.vvc.get(vid);*/
                 Constant.registerMainChannel(vid,ctx.channel());
                 log.info("主通道绑定成功:{}",vid);
-                /*if (StringUtil.isNullOrEmpty(vid) || "client".equals(vid)) {
-                    Constant.clientChannel = ctx.channel();
-                }else {
-                    if (null != visitorChannel) {
-                        ctx.channel().attr(Constant.VID).set(vid);
-                        Constant.vcc.put(vid, ctx.channel());
-                        // 通道绑定完成可以读取访客数据 并触发访客处理器的channelWritabilityChanged操作和Read0操作
-                        visitorChannel.config().setOption(ChannelOption.AUTO_READ, true);
-                    }else {
-                        log.error("代理服务端报错: 访客和客户端绑定连接失败！");
-                    }
-                }*/
                 break;
             case ProxyMsg.TYPE_TRANSFER:
                 // 把数据转到用户服务
@@ -67,21 +53,4 @@ public class ClientHandler extends SimpleChannelInboundHandler<ProxyMsg> {
         super.channelActive(ctx);
     }
 
-    @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        Channel clientChannel = ctx.channel();
-        String vid = clientChannel.attr(VID).get();
-        if(StringUtil.isNullOrEmpty(vid)) {
-            super.channelWritabilityChanged(ctx);
-            return;
-        }
-        Channel visitorChannel = vvc.get(vid);
-
-        //保持访客和客户端通道可写性一致
-        if (visitorChannel != null) {
-            visitorChannel.config().setOption(ChannelOption.AUTO_READ, clientChannel.isWritable());
-        }
-
-        super.channelWritabilityChanged(ctx);
-    }
 }

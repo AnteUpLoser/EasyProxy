@@ -30,6 +30,7 @@ public class Constant {
         Optional.ofNullable( vvc.remove(uid)).ifPresent(old->old.close());
         vvc.put(uid,channel);
     }
+
     public static Channel getMainChannel(String uid){
         return vvc.get(uid);
     }

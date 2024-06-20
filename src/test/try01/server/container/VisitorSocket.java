@@ -1,16 +1,16 @@
 package server.container;
 
-import static common.Constant.*;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.extern.slf4j.Slf4j;
-import server.handler.VisitorSocketHandler;
+import server.handler.VisitorHandler;
+
+import java.net.InetSocketAddress;
+
+import static server.common.Constant.visitorPort;
 
 @Slf4j
 public class VisitorSocket {
@@ -26,15 +26,15 @@ public class VisitorSocket {
                     protected void initChannel(SocketChannel channel) throws Exception {
                         channel.pipeline()
                                 //处理连接它的访客(客户端)
-                                .addLast(new VisitorSocketHandler());
+                                .addLastnew VisitorHandler());
                     }
-                }).bind(visitPort);
+                }).bind(visitorPort);
 
         future.addListener((ChannelFutureListener) future1 -> {
-            if(future1.isSuccess()) {
-                log.info("访客端启动成功");
-            }else{
-                log.info("访客端启动失败");
+            if(future1.isSuccess()){
+                log.info("访客到访 ····················");
+            }else {
+                log.error("访客请求连接失败");
             }
         });
 

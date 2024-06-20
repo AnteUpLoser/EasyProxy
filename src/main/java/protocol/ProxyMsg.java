@@ -25,19 +25,4 @@ public class ProxyMsg {
     /** 消息携带数据 */
     private byte[] data;
 
-    public byte getType() {
-        return type;
-    }
-
-    public void setType(byte type) {
-        this.type = type;
-    }
-
-    public byte[] getData() {
-        return data;
-    }
-
-    public void setData(byte[] data) {
-        this.data = data;
-    }
 }

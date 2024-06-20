@@ -1,45 +1,35 @@
 package client.container;
 
-import client.common.ConnectUtil;
-import client.common.Constant;
-import client.handler.ServiceHandler;
+import client.handler.ServiceSocketHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.internal.StringUtil;
+import lombok.extern.slf4j.Slf4j;
+import static common.Constant.*;
 
+@Slf4j
 public class ServiceSocket {
-    static EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+    private static EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
 
-
-    public static void start(String vid) {
-        try {
-            Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        public void initChannel(SocketChannel ch) throws Exception {
-                            ChannelPipeline pipeline = ch.pipeline();
-                            pipeline.addLast(new ServiceHandler());
-                        }
-
-                    });
-            bootstrap.connect("127.0.0.1", Constant.realPort).addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    if (future.isSuccess()) {
-                        // 客户端链接真实服务成功
-                        future.channel().config().setOption(ChannelOption.AUTO_READ, false);
-                        future.channel().attr(Constant.VID).set(vid);
-                        Constant.vrc.put(vid, future.channel());
-                        ConnectUtil.connectProxyServer(vid);
+    public static void start() {
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
+                .handler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    public void initChannel(SocketChannel ch) throws Exception {
+                        ChannelPipeline pipeline = ch.pipeline();
+                        pipeline.addLast(new ServiceSocketHandler());
                     }
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                });
+        bootstrap.connect(realServiceIp, realServicePort).addListener((ChannelFutureListener) future -> {
+            if (future.isSuccess()) {
+                log.info("内网服务端启动成功, 已绑定rsc");
+                rsc.put(clientKey, future.channel());
+            }else{
+                log.error("内网服务端启动失败！");
+            }
+        });
     }
 }
