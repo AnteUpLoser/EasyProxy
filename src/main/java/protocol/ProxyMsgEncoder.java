@@ -3,6 +3,7 @@ package protocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import lombok.extern.slf4j.Slf4j;
 
 import static protocol.Constant.DATA_LEN_SIZE;
 import static protocol.Constant.TYPE_SIZE;
@@ -14,19 +15,19 @@ import static protocol.Constant.TYPE_SIZE;
  * 协议格式如下: <br>
  * | body_len (5 bytes) | type (1 byte) | data (variable length) |
  */
+@Slf4j
 public class ProxyMsgEncoder extends MessageToByteEncoder<ProxyMsg> {
-
 
     //提供空参构造
     public ProxyMsgEncoder(){}
-
     @Override
     protected void encode(ChannelHandlerContext ctx, ProxyMsg msg, ByteBuf out) throws Exception {
-        int bodyLen = TYPE_SIZE + DATA_LEN_SIZE;
+        log.info("msg encode:{}",msg);
+        int bodyLen = TYPE_SIZE;
+
         if(msg.getData() != null){
             bodyLen += msg.getData().length;
         }
-
         //先写入消息体长度 单位字节
         out.writeInt(bodyLen);
         //写入消息体类型
@@ -35,6 +36,5 @@ public class ProxyMsgEncoder extends MessageToByteEncoder<ProxyMsg> {
         if (msg.getData() != null) {
             out.writeBytes(msg.getData());
         }
-
     }
 }

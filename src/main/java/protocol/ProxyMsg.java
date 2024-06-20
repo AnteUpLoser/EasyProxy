@@ -1,9 +1,11 @@
 package protocol;
 
 import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-
-
+@Data
+@EqualsAndHashCode
 public class ProxyMsg {
     /** 心跳 */
     public static final byte TYPE_HEARTBEAT = 0x00;

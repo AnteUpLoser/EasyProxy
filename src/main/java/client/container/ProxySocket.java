@@ -50,14 +50,17 @@ public class ProxySocket {
                     ProxyMsg msg = new ProxyMsg();
                     msg.setType(ProxyMsg.TYPE_CONNECT);
                     msg.setData(vid.getBytes(StandardCharsets.UTF_8));
-                    channel.writeAndFlush(msg);
-                    log.info("已经发送vid");
-                    vpc.put(vid, channel);
-                    channel.attr(VID).set(vid);
-                    Channel realChannel = vrc.get(vid);
-                    if (null != realChannel) {
-                        realChannel.config().setOption(ChannelOption.AUTO_READ, true);
-                    }
+                    channel.writeAndFlush(msg).addListener((ChannelFutureListener) channelFuture1 -> {
+                        if(channelFuture1.isSuccess()){
+                            log.info("已经发送vid");
+                            vpc.put(vid, channel);
+                            /*channel.attr(VID).set(vid);
+                            Channel realChannel = vrc.get(vid);
+                            if (null != realChannel) {
+                                realChannel.config().setOption(ChannelOption.AUTO_READ, true);
+                            }*/
+                        }
+                    });
                 }
             }else {
                 log.error("代理客户端连接代理服务端失败！");

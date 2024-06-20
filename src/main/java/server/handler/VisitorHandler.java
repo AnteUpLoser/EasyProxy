@@ -21,26 +21,19 @@ public class VisitorHandler extends SimpleChannelInboundHandler<ByteBuf> {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         InetSocketAddress visitorAddress = (InetSocketAddress) ctx.channel().remoteAddress();
         log.info("访客远程地址: {}", visitorAddress);
-
         // 访客连接上代理服务器Channel
         Channel visitorChannel = ctx.channel();
         // 先不读取访客数据
         visitorChannel.config().setOption(ChannelOption.AUTO_READ, false);
-
         // 生成访客ID
         String vid = UUID.randomUUID().toString();
-
         // 绑定访客通道
         visitorChannel.attr(VID).set(vid);
         vvc.put(vid, visitorChannel);
-
         ProxyMsg msg = new ProxyMsg();
         msg.setType(ProxyMsg.TYPE_CONNECT);
         msg.setData(vid.getBytes());
         clientChannel.writeAndFlush(msg);
-
-
-        super.channelActive(ctx);
     }
 
     @Override
@@ -55,7 +48,6 @@ public class VisitorHandler extends SimpleChannelInboundHandler<ByteBuf> {
         ProxyMsg msg = new ProxyMsg();
         msg.setType(ProxyMsg.TYPE_TRANSFER);
         msg.setData(bytes);
-
         //发送给访客服务器的客户端 也就是Netty代理的服务端
         Channel clientChannel = vcc.get(vid);
         clientChannel.writeAndFlush(msg);
