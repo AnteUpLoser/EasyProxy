@@ -17,7 +17,7 @@ import static server.common.Constant.vvc;
 public class ClientHandler extends SimpleChannelInboundHandler<ProxyMsg> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ProxyMsg msg) throws Exception {
-        log.info("收到消息:{}",msg);
+
         Channel clientChannel = ctx.channel();
         byte type =msg.getType();
         switch (type){

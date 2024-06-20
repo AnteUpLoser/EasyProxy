@@ -14,6 +14,7 @@ public class ProxyMsgDecoder extends LengthFieldBasedFrameDecoder {
     protected ProxyMsg decode(ChannelHandlerContext ctx, ByteBuf in2) throws Exception {
         ByteBuf in = (ByteBuf) super.decode(ctx, in2);
         log.info("in:{}",in);
+
         if(in==null||in.readableBytes()<4){
             return null;
         }
@@ -27,7 +28,7 @@ public class ProxyMsgDecoder extends LengthFieldBasedFrameDecoder {
             in.readBytes(data);
             msg.setData(data);
         }
-        log.info("msg:{}",msg);
+//        log.info("msg:{}",msg);
         in.release();
         return msg;
     }

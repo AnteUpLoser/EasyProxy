@@ -27,6 +27,7 @@ public class VisitorSocketHandler extends SimpleChannelInboundHandler<ByteBuf> {
             msg.setType(ProxyMsg.TYPE_TRANSFER);
             msg.setData(bytes);
             proxyChannel.writeAndFlush(msg);
+            log.info("已经发送访客数据->");
         }
     }
 
@@ -34,6 +35,7 @@ public class VisitorSocketHandler extends SimpleChannelInboundHandler<ByteBuf> {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         //建立访客通道传输数据
         vc.put(clientKey, ctx.channel());
+        log.info("已经建立访客通道");
         super.channelActive(ctx);
     }
 }

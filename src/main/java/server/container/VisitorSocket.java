@@ -25,7 +25,6 @@ public class VisitorSocket {
                     @Override
                     protected void initChannel(SocketChannel channel) throws Exception {
                         channel.pipeline()
-                                //处理连接它的访客(客户端)
                                 .addLast(new VisitorSocketHandler());
                     }
                 }).bind(visitPort);
@@ -33,6 +32,8 @@ public class VisitorSocket {
         future.addListener((ChannelFutureListener) future1 -> {
             if(future1.isSuccess()) {
                 log.info("访客端启动成功");
+
+
             }else{
                 log.info("访客端启动失败");
             }

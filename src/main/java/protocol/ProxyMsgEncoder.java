@@ -22,7 +22,7 @@ public class ProxyMsgEncoder extends MessageToByteEncoder<ProxyMsg> {
     public ProxyMsgEncoder(){}
     @Override
     protected void encode(ChannelHandlerContext ctx, ProxyMsg msg, ByteBuf out) throws Exception {
-        log.info("msg encode:{}",msg);
+//        log.info("msg encode:{}",msg);
         int bodyLen = TYPE_SIZE;
 
         if(msg.getData() != null){
